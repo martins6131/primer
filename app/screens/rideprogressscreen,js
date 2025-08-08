@@ -1,0 +1,89 @@
+// app/screens/RideProgressScreen.js
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Linking, Alert } from 'react-native';
+import io from 'socket.io-client';
+import colors from '../styles/colors';
+
+export default function RideProgressScreen({ route, navigation }) {
+  const { assignment, backend, riderId } = route.params || {};
+  const [status, setStatus] = useState('searching'); // searching, arriving, picked, completed
+  const socketRef = useRef(null);
+
+  useEffect(() => {
+    const sock = io(backend || 'http://localhost:5000');
+    socketRef.current = sock;
+    sock.on('connect', () => {
+      sock.emit('register', { userId: riderId || 'rider-123', role: 'rider' });
+    });
+
+    sock.on('driverStatusUpdate', (update) => {
+      if (update.rideId === assignment?.rideId) {
+        setStatus(update.status);
+      }
+    });
+
+    // fallback: update status when assigned
+    if (assignment) setStatus('arriving');
+
+    return () => sock.disconnect();
+  }, []);
+
+  const callDriver = () => {
+    // placeholder — in prod we'd use driver phone; open dialer
+    Linking.openURL('tel:+254700000000').catch(() => Alert.alert('Unable', 'Cannot open dialer.'));
+  };
+
+  const cancelRide = () => {
+    Alert.alert('Cancel ride', 'Are you sure?', [
+      { text: 'No' },
+      { text: 'Yes', onPress: () => navigation.goBack() }
+    ]);
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Driver on the way</Text>
+        <Text style={styles.subtitle}>{assignment?.driverId ?? '—'}</Text>
+        <View style={styles.row}>
+          <View>
+            <Text style={{ fontWeight: '700' }}>ETA</Text>
+            <Text style={{ marginTop: 6 }}>{assignment?.etaMin ?? '—'} mins</Text>
+          </View>
+          <View>
+            <Text style={{ fontWeight: '700' }}>Status</Text>
+            <Text style={{ marginTop: 6 }}>{status}</Text>
+          </View>
+        </View>
+
+        <View style={{ marginTop: 16, flexDirection: 'row', gap: 10 }}>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={callDriver}><Text>Call</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.secondaryBtn} onPress={() => Alert.alert('Message', 'Chat not implemented in demo') }><Text>Message</Text></TouchableOpacity>
+          <TouchableOpacity style={styles.primaryBtn} onPress={() => {
+            // simulate driver completing trip (for demo)
+            socketRef.current?.emit('driverUpdate', { driverId: assignment.driverId, rideId: assignment.rideId, status: 'completed' });
+            setStatus('completed');
+            Alert.alert('Trip Completed', 'Thanks for using Primer');
+            navigation.popToTop();
+          }}>
+            <Text style={{ color: '#fff', fontWeight: '700' }}>Complete</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={{ marginTop: 12 }} onPress={cancelRide}>
+          <Text style={{ color: '#999' }}>Cancel ride</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.softGray, padding: 16 },
+  card: { backgroundColor: colors.white, padding: 18, borderRadius: 12, shadowColor: '#000', shadowOpacity: 0.08, elevation: 4 },
+  title: { fontSize: 18, fontWeight: '800', color: colors.black },
+  subtitle: { color: '#666', marginTop: 6 },
+  row: { marginTop: 12, flexDirection: 'row', justifyContent: 'space-between' },
+  primaryBtn: { backgroundColor: colors.primerGreen, padding: 12, borderRadius: 10, marginLeft: 12 },
+  secondaryBtn: { borderWidth: 1, borderColor: '#EEE', padding: 12, borderRadius: 10 }
+});
