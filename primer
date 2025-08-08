@@ -1,0 +1,268 @@
+// Primer — Logo & UI Mockups
+// This single-file React component exports a small preview page containing:
+// 1. SVG Logo component
+// 2. Color palette and style tokens
+// 3. Screen components: Splash, Auth, MainMap, RideProgress, TripComplete, Profile
+// 4. A simple layout showing the screens for visual review
+
+// NOTE: This is a UI mockup intended for preview. It uses Tailwind-style classes (as requested by canvas).
+// It's production-ready in terms of structure, not integrated with maps or backend here.
+
+import React from 'react';
+
+// -----------------------------
+// Color Tokens
+// -----------------------------
+const COLORS = {
+  black: '#000000',
+  primerGreen: '#34C759', 
+  white: '#FFFFFF',
+  darkGray: '#111214',
+  softGray: '#F2F4F7'
+};
+
+// -----------------------------
+// Logo: SVG component
+// Description: Circular badge with stylized 'P' forming a road curve.
+// - Black circular background
+// - White 'P' stroke with a green road stripe running through
+// -----------------------------
+export function PrimerLogo({ size = 120 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="60" cy="60" r="58" fill={COLORS.black} />
+      {/* Outer white P shape */}
+      <path d="M44 30 C62 30, 76 40, 76 58 C76 76, 54 78, 44 78 Z" fill={COLORS.white} />
+      {/* Inner green road stripe */}
+      <path d="M60 36 C68 38, 72 46, 72 58 C72 70, 60 72, 52 72" stroke={COLORS.primerGreen} strokeWidth="5" fill="none" strokeLinecap="round" />
+      {/* Cutout to suggest motion */}
+      <circle cx="58" cy="48" r="6" fill={COLORS.black} />
+    </svg>
+  );
+}
+
+// -----------------------------
+// Reusable UI bits
+// -----------------------------
+function PrimaryButton({ children }) {
+  return (
+    <button className="px-6 py-3 rounded-xl font-semibold shadow-md" style={{ backgroundColor: COLORS.primerGreen, color: COLORS.white }}>
+      {children}
+    </button>
+  );
+}
+
+function SecondaryButton({ children }) {
+  return (
+    <button className="px-4 py-2 rounded-lg font-medium border" style={{ borderColor: COLORS.softGray, color: COLORS.black, backgroundColor: COLORS.white }}>
+      {children}
+    </button>
+  );
+}
+
+// -----------------------------
+// Screen: Splash
+// -----------------------------
+export function SplashScreen() {
+  return (
+    <div className="w-80 h-96 rounded-2xl p-6 flex flex-col items-center justify-center" style={{ background: `linear-gradient(180deg, ${COLORS.darkGray}, ${COLORS.black})` }}>
+      <PrimerLogo size={140} />
+      <h1 className="mt-4 text-white text-xl font-bold">Primer</h1>
+      <p className="mt-2 text-sm text-gray-300 text-center">Move Smarter — a fresh ride experience blending speed, trust & design.</p>
+      <div className="mt-6">
+        <div className="animate-pulse bg-white/10 rounded-full px-6 py-2 text-white">Loading…</div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------
+// Screen: Auth (Login / OTP)
+// -----------------------------
+export function AuthScreen() {
+  return (
+    <div className="w-80 h-96 rounded-2xl p-6 bg-white flex flex-col justify-between">
+      <div>
+        <div className="flex items-center gap-3">
+          <PrimerLogo size={48} />
+          <div>
+            <h2 className="text-black text-lg font-bold">Welcome to Primer</h2>
+            <p className="text-sm text-gray-500">Sign in to request rides</p>
+          </div>
+        </div>
+        <div className="mt-6">
+          <label className="text-sm text-gray-700">Phone number</label>
+          <input className="mt-2 w-full p-3 rounded-lg border" placeholder="+254 7XX XXX XXX" />
+        </div>
+        <div className="mt-4 flex gap-3">
+          <PrimaryButton>Continue</PrimaryButton>
+          <SecondaryButton>Sign up</SecondaryButton>
+        </div>
+      </div>
+      <div className="text-xs text-gray-400">By continuing you agree to Primer Terms & Privacy</div>
+    </div>
+  );
+}
+
+// -----------------------------
+// Screen: Main Map / Request Ride
+// (Mockup only — no actual map integration here)
+// -----------------------------
+export function MainMapScreen() {
+  return (
+    <div className="w-96 h-96 rounded-2xl overflow-hidden shadow-lg relative" style={{ backgroundColor: '#E6F7EE' }}>
+      {/* Top search bar */}
+      <div className="absolute top-4 left-4 right-4 p-3 rounded-xl shadow-md flex items-center" style={{ backgroundColor: COLORS.white }}>
+        <input placeholder="Where to?" className="flex-1 outline-none" />
+        <div className="ml-3 text-sm text-gray-500">🚗</div>
+      </div>
+
+      {/* Mock map area */}
+      <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-medium">Map Preview (Mock)</div>
+
+      {/* Bottom sheet */}
+      <div className="absolute bottom-4 left-4 right-4 p-4 bg-white rounded-2xl shadow-2xl">
+        <div className="flex justify-between items-center">
+          <div>
+            <div className="text-sm text-gray-500">Pickup</div>
+            <div className="font-semibold">Nairobi</div>
+          </div>
+          <div>
+            <div className="text-sm text-gray-500">ETA</div>
+            <div className="font-semibold">3 min</div>
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex gap-3 items-center">
+            <div className="w-14 h-14 rounded-lg flex items-center justify-center" style={{ backgroundColor: COLORS.softGray }}>
+              🚘
+            </div>
+            <div>
+              <div className="text-sm font-medium">Economy</div>
+              <div className="text-xs text-gray-500">1–2 passengers</div>
+            </div>
+          </div>
+          <div className="flex flex-col items-end">
+            <div className="text-sm font-semibold">Ksh 350</div>
+            <PrimaryButton>Request Ride</PrimaryButton>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------
+// Screen: Ride Progress
+// -----------------------------
+export function RideProgressScreen() {
+  return (
+    <div className="w-96 h-96 rounded-2xl p-4 bg-white shadow-lg flex flex-col justify-between">
+      <div>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">DR</div>
+          <div>
+            <div className="font-bold">John • Toyota Axio</div>
+            <div className="text-sm text-gray-500">Plate: KCF 123A</div>
+          </div>
+        </div>
+        <div className="mt-4 text-sm text-gray-500">Driver is 2 min away</div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <div className="flex gap-3">
+          <button className="px-4 py-2 rounded-lg border" style={{ borderColor: COLORS.softGray }}>Call</button>
+          <button className="px-4 py-2 rounded-lg border" style={{ borderColor: COLORS.softGray }}>Message</button>
+        </div>
+        <button className="px-5 py-3 rounded-xl" style={{ backgroundColor: COLORS.primerGreen, color: COLORS.white }}>Share ETA</button>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------
+// Screen: Trip Complete
+// -----------------------------
+export function TripCompleteScreen() {
+  return (
+    <div className="w-80 h-96 rounded-2xl p-6 bg-white flex flex-col justify-between shadow-md">
+      <div>
+        <h3 className="text-lg font-bold">Trip complete</h3>
+        <p className="text-sm text-gray-500 mt-2">Fare summary</p>
+        <div className="mt-4 bg-gray-50 p-3 rounded-lg">
+          <div className="flex justify-between"><span>Base fare</span><span>Ksh 200</span></div>
+          <div className="flex justify-between mt-2"><span>Distance</span><span>Ksh 120</span></div>
+          <div className="flex justify-between mt-2"><strong>Total</strong><strong>Ksh 320</strong></div>
+        </div>
+      </div>
+      <div>
+        <div className="text-sm mb-3">Rate your driver</div>
+        <div className="flex gap-3 mb-4">
+          <button className="px-3 py-2 rounded-lg border">★</button>
+          <button className="px-3 py-2 rounded-lg border">★★</button>
+          <button className="px-3 py-2 rounded-lg border">★★★</button>
+          <button className="px-3 py-2 rounded-lg border">★★★★</button>
+          <button className="px-3 py-2 rounded-lg border">★★★★★</button>
+        </div>
+        <PrimaryButton>Done</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------
+// Screen: Profile / Menu
+// -----------------------------
+export function ProfileScreen() {
+  return (
+    <div className="w-80 h-96 rounded-2xl p-6 bg-white shadow-md">
+      <div className="flex items-center gap-4">
+        <div className="w-16 h-16 rounded-full bg-gray-100"></div>
+        <div>
+          <div className="font-bold">Martin Kanai</div>
+          <div className="text-sm text-gray-500">+254 7XX XXX XXX</div>
+        </div>
+      </div>
+      <div className="mt-6">
+        <div className="py-2 border-b">Wallet • Ksh 1500</div>
+        <div className="py-2 border-b">Your trips</div>
+        <div className="py-2 border-b">Saved places</div>
+        <div className="py-2 border-b">Payments</div>
+        <div className="py-2 border-b">Settings</div>
+      </div>
+    </div>
+  );
+}
+
+// -----------------------------
+// Exported Preview Component
+// -----------------------------
+export default function PrimerMockupPreview() {
+  return (
+    <div className="p-8 bg-gray-50 min-h-screen flex flex-col gap-8 items-start">
+      <div className="flex items-center gap-4">
+        <PrimerLogo size={64} />
+        <div>
+          <h1 className="text-2xl font-bold">Primer — UI Mockups</h1>
+          <p className="text-sm text-gray-500">Black • Green • White — clean blend inspired by Bolt & Uber</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-6">
+        <div><SplashScreen /></div>
+        <div><AuthScreen /></div>
+        <div><ProfileScreen /></div>
+        <div><MainMapScreen /></div>
+        <div><RideProgressScreen /></div>
+        <div><TripCompleteScreen /></div>
+      </div>
+
+      <div className="mt-6 text-sm text-gray-600 max-w-2xl">
+        This mockup file contains reusable components you can extract into a React Native + Tailwind project.
+        For pixel-perfect mockups I can export SVGs and provide Figma-ready assets next — tell me which screens
+        you want in high-fidelity.
+      </div>
+    </div>
+  );
+}
